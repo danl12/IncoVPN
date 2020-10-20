@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Настройки</string>
+    <string name="connect_action">Подключиться</string>
+    <string name="disconnect_action">Отключиться</string>
+    <string name="any">Любая</string>
+    <string name="country_format">Страна: %s</string>
+    <string name="connection_time_format">Подключен к %s:\n%02d:%02d:%02d</string>
+    <string name="connecting_format">Подключение к %s…</string>
+    <string name="connect_at_start">Подключиться при запуске приложения</string>
+    <string name="save_country">Сохранять выбранную страну</string>
+</resources>

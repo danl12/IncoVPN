@@ -1,0 +1,14 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreferenceCompat
+        app:key="connect_at_start"
+        app:title="@string/connect_at_start"
+        />
+
+    <SwitchPreferenceCompat
+        app:key="save_country"
+        app:defaultValue="true"
+        app:title="@string/save_country"
+        />
+
+</PreferenceScreen>
