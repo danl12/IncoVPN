@@ -11,6 +11,7 @@ import android.os.IBinder
 import android.os.RemoteException
 import android.view.ViewGroup
 import androidx.activity.viewModels
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import coil.clear
@@ -18,13 +19,12 @@ import coil.decode.SvgDecoder
 import coil.load
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.customListAdapter
+import com.danl.incovpn.IncoVPNApp.Companion.BASE_URL
+import com.danl.incovpn.IncoVPNApp.Companion.KEY_CONNECT_AT_START
 import com.danl.incovpn.R
 import com.danl.incovpn.databinding.ActivityMainBinding
 import com.danl.incovpn.databinding.CountryListItemBinding
-import com.danl.incovpn.util.EventObserver
-import com.danl.incovpn.util.KEY_CONNECT_AT_START
-import com.danl.incovpn.util.toDisplayCountry
-import com.danl.incovpn.util.toImageUrl
+import com.danl.incovpn.util.*
 import com.danl.viewbindinghelper.ViewBindingActivity
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
@@ -86,36 +86,25 @@ class MainActivity : ViewBindingActivity<ActivityMainBinding>() {
         intent.action = OpenVPNService.START_SERVICE
         bindService(intent, connection, BIND_AUTO_CREATE)
         connectionTimeTask = timer.schedule(0, 1000) {
-            if (connectedCountry == null) return@schedule
-            if (isConnected) {
-                val connectTime = service?.connectTime
-                if (connectTime == null || connectTime == 0L) return@schedule
-                val time = System.currentTimeMillis() - connectTime
-                val hours = TimeUnit.MILLISECONDS.toHours(time)
-                val minutes =
-                    TimeUnit.MILLISECONDS.toMinutes(time) - TimeUnit.HOURS.toMinutes(hours)
-                val seconds =
-                    TimeUnit.MILLISECONDS.toSeconds(time) -
-                            TimeUnit.HOURS.toSeconds(hours) -
-                            TimeUnit.MINUTES.toSeconds(minutes)
-                binding.timeTextView.post {
-                    binding.timeTextView.text =
-                        str(
-                            R.string.connection_time_format,
-                            connectedCountry,
-                            hours,
-                            minutes,
-                            seconds
-                        )
-                }
-            } else {
-                binding.timeTextView.post {
-                    binding.connectingTextView.text =
-                        str(
-                            R.string.connecting_format,
-                            connectedCountry
-                        )
-                }
+            val connectTime = service?.connectTime
+            if (connectTime == null || connectTime == 0L || connectedCountry == null) return@schedule
+            val time = System.currentTimeMillis() - connectTime
+            val hours = TimeUnit.MILLISECONDS.toHours(time)
+            val minutes =
+                TimeUnit.MILLISECONDS.toMinutes(time) - TimeUnit.HOURS.toMinutes(hours)
+            val seconds =
+                TimeUnit.MILLISECONDS.toSeconds(time) -
+                        TimeUnit.HOURS.toSeconds(hours) -
+                        TimeUnit.MINUTES.toSeconds(minutes)
+            binding.timeTextView.post {
+                binding.timeTextView.text =
+                    str(
+                        R.string.connection_time_format,
+                        connectedCountry,
+                        hours,
+                        minutes,
+                        seconds
+                    )
             }
         }
     }
@@ -150,7 +139,7 @@ class MainActivity : ViewBindingActivity<ActivityMainBinding>() {
         viewModel.countries.observe(this) { res ->
             res.success { countries ->
                 countriesDialog = MaterialDialog(this).apply {
-                    title(text = "Select country")
+                    title(text = str(R.string.select_country))
                     customListAdapter(CountryAdapter(countries) {
                         dismiss()
                         viewModel.selectCountry(it)
@@ -165,7 +154,7 @@ class MainActivity : ViewBindingActivity<ActivityMainBinding>() {
         }
         viewModel.selectedCountry.observe(this) {
             if (it == null) {
-                binding.countryImageView.clear()
+                binding.countryImageView.load(R.drawable.ic_worldwide)
                 binding.countryNameTextView.text = str(R.string.any)
             } else {
                 binding.countryImageView.load(it.toImageUrl()) {
@@ -177,6 +166,8 @@ class MainActivity : ViewBindingActivity<ActivityMainBinding>() {
         viewModel.connect.observe(this, EventObserver { res ->
             res.success {
                 connectedCountry = it.country.toDisplayCountry()
+                binding.connectingTextView.text = str(R.string.connecting_format, connectedCountry)
+                binding.timeTextView.text = str(R.string.connection_time_format, connectedCountry, 0, 0, 0)
                 ProfileManager.getInstance(this).addProfile(viewModel.profile)
                 val intent = VpnService.prepare(this)
 
@@ -270,7 +261,7 @@ class MainActivity : ViewBindingActivity<ActivityMainBinding>() {
                     }
                     binding.nameTextView.text = country.toDisplayCountry()
                 } else {
-                    binding.imageView.clear()
+                    binding.imageView.load(R.drawable.ic_worldwide)
                     binding.nameTextView.text = appStr(R.string.any)
                 }
                 binding.root.onClick {

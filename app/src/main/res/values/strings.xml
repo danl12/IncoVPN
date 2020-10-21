@@ -9,4 +9,5 @@
     <string name="connecting_format">Connecting to %s…</string>
     <string name="connect_at_start">Connect at app start</string>
     <string name="save_country">Save selected country</string>
+    <string name="select_country">Select country</string>
 </resources>

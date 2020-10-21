@@ -1,7 +1,8 @@
 package com.danl.incovpn.di
 
+import com.danl.incovpn.IncoVPNApp.Companion.API_URL
+import com.danl.incovpn.IncoVPNApp.Companion.TOKEN
 import com.danl.incovpn.data.ApiService
-import com.danl.incovpn.util.API_URL
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -32,7 +33,11 @@ class NetworkModule {
     @Singleton
     @Provides
     fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
-        OkHttpClient.Builder().addInterceptor(httpLoggingInterceptor).build()
+        OkHttpClient.Builder().addInterceptor(httpLoggingInterceptor).addInterceptor {
+            it.proceed(
+                it.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
+            )
+        }.build()
 
     @Singleton
     @Provides

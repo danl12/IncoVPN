@@ -9,13 +9,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.danl.incovpn.IncoVPNApp.Companion.KEY_SAVE_COUNTRY
+import com.danl.incovpn.IncoVPNApp.Companion.KEY_SELECTED_COUNTRY
 import com.danl.incovpn.data.ServerRepository
 import com.danl.incovpn.data.model.Resource
 import com.danl.incovpn.data.model.Server
 import com.danl.incovpn.data.model.resourceLiveData
 import com.danl.incovpn.util.Event
-import com.danl.incovpn.util.KEY_SAVE_COUNTRY
-import com.danl.incovpn.util.KEY_SELECTED_COUNTRY
 import com.danl.incovpn.util.toDisplayCountry
 import de.blinkt.openvpn.VpnProfile
 import de.blinkt.openvpn.core.ConfigParser

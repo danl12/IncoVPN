@@ -9,4 +9,5 @@
     <string name="connecting_format">Подключение к %s…</string>
     <string name="connect_at_start">Подключиться при запуске приложения</string>
     <string name="save_country">Сохранять выбранную страну</string>
+    <string name="select_country">Выберите страну</string>
 </resources>
