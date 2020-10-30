@@ -5,16 +5,12 @@ import android.content.SharedPreferences
 import android.util.Base64
 import androidx.core.content.edit
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.danl.incovpn.IncoVPNApp.Companion.KEY_SAVE_COUNTRY
 import com.danl.incovpn.IncoVPNApp.Companion.KEY_SELECTED_COUNTRY
 import com.danl.incovpn.data.ServerRepository
 import com.danl.incovpn.data.model.Resource
 import com.danl.incovpn.data.model.Server
-import com.danl.incovpn.data.model.resourceLiveData
 import com.danl.incovpn.util.Event
 import com.danl.incovpn.util.toDisplayCountry
 import de.blinkt.openvpn.VpnProfile
@@ -57,8 +53,14 @@ class MainViewModel @ViewModelInject constructor(
     val byteCount: LiveData<Pair<Long, Long>>
         get() = _byteCount
 
-    val countries = resourceLiveData {
-        serverRepository.getCountries()
+    val countries = liveData {
+        emit(getResource {
+            try {
+                Resource.Success(serverRepository.getCountries())
+            } catch (e: Exception) {
+                Resource.Error(e.message ?: "Unknown error.")
+            }
+        })
     }
 
     init {
@@ -78,16 +80,26 @@ class MainViewModel @ViewModelInject constructor(
 
     private var createProfileJob: Job? = null
 
-    private suspend fun getServer() = try {
-        Resource.Success(serverRepository.get(selectedCountry.value))
-    } catch (e: Exception) {
-        Resource.Error(e.message ?: "Unknown error.")
+    private suspend fun <T> getResource(get: suspend () -> Resource<T>): Resource<T> {
+        var res: Resource<T>? = null
+        for (i in 0 until 3) {
+            res = get()
+
+            if (res is Resource.Success) break
+        }
+        return res!!
     }
 
     fun createProfile() {
         createProfileJob?.cancel()
         createProfileJob = viewModelScope.launch(context = Dispatchers.IO) {
-            val res = getServer()
+            val res = getResource {
+                try {
+                    Resource.Success(serverRepository.get(selectedCountry.value))
+                } catch (e: Exception) {
+                    Resource.Error(e.message ?: "Unknown error.")
+                }
+            }
             res.success { server ->
                 val configParser = ConfigParser()
                 configParser.parseConfig(

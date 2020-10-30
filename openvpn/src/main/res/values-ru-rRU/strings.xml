@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pauseVPN">Приостановить</string>
+    <string name="cancel_connection">Отключить</string>
+    <string name="resumevpn">Продолжить</string>
+</resources>

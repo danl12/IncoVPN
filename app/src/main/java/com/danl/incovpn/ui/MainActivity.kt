@@ -87,7 +87,7 @@ class MainActivity : ViewBindingActivity<ActivityMainBinding>() {
         bindService(intent, connection, BIND_AUTO_CREATE)
         connectionTimeTask = timer.schedule(0, 1000) {
             val connectTime = service?.connectTime
-            if (connectTime == null || connectTime == 0L || connectedCountry == null) return@schedule
+            if (connectTime == null || connectTime == 0L || connectedCountry == null || !isConnected) return@schedule
             val time = System.currentTimeMillis() - connectTime
             val hours = TimeUnit.MILLISECONDS.toHours(time)
             val minutes =
@@ -215,7 +215,7 @@ class MainActivity : ViewBindingActivity<ActivityMainBinding>() {
             binding.inTextView.text = inString
             binding.outTextView.text = outString
         }
-        if (preferences.getBoolean(KEY_CONNECT_AT_START, false)) {
+        if (preferences.getBoolean(KEY_CONNECT_AT_START, false) && !VpnStatus.isVPNActive()) {
             viewModel.createProfile()
         }
     }

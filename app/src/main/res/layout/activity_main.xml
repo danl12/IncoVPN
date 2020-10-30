@@ -167,9 +167,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/action_button"
+            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="200dp"
             android:layout_height="60dp"
             android:text="@string/connect_action"
+            ads:cornerRadius="30dp"
             android:textColor="@android:color/white"
             ads:layout_constraintBottom_toTopOf="@id/ad_view"
             ads:rippleColor="@color/colorSecondary"

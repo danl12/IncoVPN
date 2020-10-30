@@ -28,12 +28,15 @@ class NetworkModule {
             override fun log(message: String) {
                 Timber.tag("OkHttp").d(message)
             }
-        })
+        }).apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
 
     @Singleton
     @Provides
     fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
-        OkHttpClient.Builder().addInterceptor(httpLoggingInterceptor).addInterceptor {
+        OkHttpClient.Builder()
+            .addInterceptor(httpLoggingInterceptor).addInterceptor {
             it.proceed(
                 it.request().newBuilder().addHeader("Authorization", "Bearer $TOKEN").build()
             )

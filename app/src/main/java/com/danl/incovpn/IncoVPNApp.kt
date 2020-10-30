@@ -2,6 +2,7 @@ package com.danl.incovpn
 
 import dagger.hilt.android.HiltAndroidApp
 import de.blinkt.openvpn.core.ICSOpenVPNApplication
+import timber.log.Timber
 
 @HiltAndroidApp
 class IncoVPNApp : ICSOpenVPNApplication() {
@@ -34,6 +35,10 @@ class IncoVPNApp : ICSOpenVPNApplication() {
         BASE_URL = native.getBaseUrl(this)!!
         API_URL = "$BASE_URL/api/"
         IMAGE_URL = "$BASE_URL/static/images/"
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 
 }

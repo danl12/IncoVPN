@@ -19,5 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class com.danl.incovpn.databinding.** { *; }
--keep class com.danl.incovpn.data.** { *; }
+-keep class com.danl.incovpn.databinding.* {
+    <methods>;
+}
+-keep class com.danl.incovpn.data.model.* { <fields>; }
