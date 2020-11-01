@@ -221,14 +221,16 @@ class MainActivity : ViewBindingActivity<ActivityMainBinding>() {
     }
 
     private fun animateIncognito(alpha1: Float, alpha2: Float? = null) {
-        binding.incognitoImageView.animate()
-            .setDuration(1000)
-            .withEndAction(alpha2?.let {
-                Runnable {
-                    animateIncognito(it, alpha1)
-                }
-            })
-            .alpha(alpha1)
+        if (!isDestroyed) {
+            binding.incognitoImageView.animate()
+                .setDuration(1000)
+                .withEndAction(alpha2?.let {
+                    Runnable {
+                        animateIncognito(it, alpha1)
+                    }
+                })
+                .alpha(alpha1)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
